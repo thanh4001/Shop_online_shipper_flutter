@@ -1,29 +1,33 @@
 import 'dart:async';
+import 'package:flutter_shipper_github/data/controller/AuthController.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_shipper_github/data/controller/OrderController.dart';
 class OrderCheckService extends GetxService {
   Timer? _timer;
   int? previousLength;
-  late Ordercontroller orderController;
-
+  late Ordercontroller orderController = Get.find<Ordercontroller>();
+  late AuthController authController = Get.find<AuthController>();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<OrderCheckService> initService() async {
-    orderController = Get.find<Ordercontroller>();
-    _timer = Timer.periodic(const Duration(seconds: 30), (Timer timer) async {
-      int currentLength = orderController.orderlist.length;
+    
+    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) async {
+      if(authController.IsLogin.value){
 
-      if (currentLength == 0) {
+      int currentLength = orderController.orderlistNotComplete.length;
+
+      
         await orderController.getall();
-      } else if (previousLength == 0 && currentLength > 0) {
+       if (previousLength == 0 && currentLength > 0) {
        
         await showNotification();
       }
-
       previousLength = currentLength;
+      }
     });
+
 
     return this;
   }

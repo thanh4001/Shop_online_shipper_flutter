@@ -25,13 +25,27 @@ class Ordercontroller extends GetxController {
       var data = response.body;
       orderlist = [];
       orderlist.addAll(Ordermodels.fromJson(data).getorderlist ?? []);
-      print("Lấy dữ liệu danh sách đơn hàng thành công");
+      getllOrderNotComplete();
     } 
     else {
+      orderlist = [];
       print("Lỗi không lấy được danh sách đơn hàng : " +response.statusCode.toString());
     }
     isLoading = false;
     update();
+  }
+
+  List<OrderData> orderlistNotComplete = [];
+  List<OrderData> get getorderlistNotComplete => orderlistNotComplete;
+  void getllOrderNotComplete(){
+    orderlistNotComplete = [];
+      for(OrderData orderData in orderlist){
+        if(orderData.status != "Đơn hàng đã hoàn thành"){
+          print(orderData.status);
+          orderlistNotComplete.add(orderData);
+          update();
+        }
+      }
   }
   List<int>? getlistorderdetailid(){
     List<int> result = [];
@@ -46,9 +60,11 @@ class Ordercontroller extends GetxController {
     for(int id in orderdetailId){
       Response response = await orderrepo.updatestatus(shipperOrderId, id);
       if(response.statusCode != 200){
-        print("Lỗi cập nhât ${response.statusCode}");
+        print("Lỗi cập nhật trạng thái đơn hàng ${response.statusCode} : ${response.body["message"]}");
+         
         return;
       }
+      
     }
     getall();
     Get.snackbar("Thông báo","Cập nhật thành công");

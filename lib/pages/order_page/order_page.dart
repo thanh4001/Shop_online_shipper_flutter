@@ -66,32 +66,16 @@ class _OrderPageState extends State<OrderPage> {
             width: AppDimention.screenWidth,
             height: AppDimention.size80,
             decoration: BoxDecoration(color: Appcolor.mainColor),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: AppDimention.size20,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Icon(
-                    Icons.arrow_circle_left_outlined,
-                    size: AppDimention.size40,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  width: AppDimention.size60,
-                ),
-                Text(
+            child: Center(
+               
+                child:  Text(
                   "Đơn hàng của bạn",
                   style: TextStyle(
                       fontSize: 20,
                       color: Colors.white,
                       fontWeight: FontWeight.w600),
                 )
-              ],
+              
             ),
           ),
           Expanded(
@@ -101,12 +85,13 @@ class _OrderPageState extends State<OrderPage> {
                 GetBuilder<Ordercontroller>(builder: (controller) {
                   return controller.isLoading
                       ? CircularProgressIndicator()
-                      : ListView.builder(
+                      :controller.orderlistNotComplete.length == 0 ? Column(children: [SizedBox(height: AppDimention.size10,),Center(child: Text("Bạn chưa có đơn hàng"),)],) :  ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: controller.orderlist.length,
+                          itemCount: controller.orderlistNotComplete.length,
                           itemBuilder: (context, index) {
-                            OrderData item = controller.orderlist[index];
+                            OrderData item = controller.orderlistNotComplete[index];
+                            
                             
 
                             return Container(
@@ -165,7 +150,7 @@ class _OrderPageState extends State<OrderPage> {
                                   Row(
                                     children: [
                                       Text(
-                                        "Phí vận chuyển : ",
+                                        "Phí vận chuyển : đ",
                                         style:
                                             TextStyle(color: Colors.grey[500]),
                                       ),

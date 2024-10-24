@@ -155,32 +155,7 @@ class _HomeListState extends State<HomeList> {
                       SizedBox(
                         height: AppDimention.size20,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          Get.toNamed(AppRoute.get_store_detail(index));
-                        },
-                        child: Center(
-                          child: Container(
-                            width: AppDimention.size120,
-                            height: AppDimention.size40,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 1,
-                                  color: Appcolor.mainColor,
-                                ),
-                                borderRadius:
-                                    BorderRadius.circular(AppDimention.size10)),
-                            child: Center(
-                              child: Text(
-                                "Xem chi tiết",
-                                style: TextStyle(
-                                  color: Appcolor.mainColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
+                      
                     ],
                   ),
                 );

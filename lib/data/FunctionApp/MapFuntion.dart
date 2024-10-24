@@ -2,6 +2,7 @@
 import 'package:flutter_shipper_github/data/FunctionApp/Point.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:math' as math;
@@ -47,5 +48,15 @@ double calculateBearing(LatLng start, LatLng end) {
       print('Error: $e');
     }
     return Point(latitude: 0, longitude: 0);
+  }
+  double calculateDistance(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) {
+    double distanceInMeters = Geolocator.distanceBetween(
+        startLatitude, startLongitude, endLatitude, endLongitude);
+    return distanceInMeters;
+  }
+  String formatTime(String isoDateTime) {
+    DateTime dateTime = DateTime.parse(isoDateTime);
+    return DateFormat('hh:mm').format(dateTime);
   }
 }

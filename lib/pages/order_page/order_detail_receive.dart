@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter_shipper_github/data/FunctionApp/MapFuntion.dart';
 import 'package:flutter_shipper_github/data/FunctionApp/MathFunction.dart';
 import 'package:flutter_shipper_github/data/FunctionApp/Point.dart';
+import 'package:flutter_shipper_github/data/controller/AuthController.dart';
 import 'package:flutter_shipper_github/data/controller/OrderController.dart';
 import 'package:flutter_shipper_github/data/controller/Store_Controller.dart';
 import 'package:flutter_shipper_github/data/models/Item/Storeitem.dart';
 import 'package:flutter_shipper_github/data/models/OrderModel.dart';
+import 'package:flutter_shipper_github/data/models/UserModelV2.dart';
 import 'package:flutter_shipper_github/themes/AppColor.dart';
 import 'package:flutter_shipper_github/themes/AppDimention.dart';
 import 'package:flutter/material.dart';
@@ -32,12 +34,19 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
   
   LatLng daNangCoordinates = LatLng(16.0544, 108.2022);
   Storecontroller storeController = Get.find<Storecontroller>();
+  AuthController authController = Get.find<AuthController>();
   Ordercontroller ordercontroller = Get.find<Ordercontroller>();
   MapController mapController = MapController();
   Point? pointCurrent;
   bool? isLoadedLocation = false;
   Mapfuntion mapfuntion = Mapfuntion();
   double zoomValue = 14;
+   String _formatNumber(int number) {
+    return number.toString().replaceAllMapped(
+          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+          (Match match) => '${match[1]}.',
+        );
+  }
 
   List<LatLng> routePoints = [];
   bool? isShowRoute = false;
@@ -247,12 +256,36 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
       print("Failed to fetch route");
     }
   }
-
+List<bool> liststatus = [];
+User? customer;
+Storesitem? storesitem;
+OrderData? item;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    loadDataOrder();
     getCurrentLocation();
+  }
+  bool loaded = false;
+  void loadDataOrder() async{
+    loaded = false;
+    item = ordercontroller.orderlist[0];
+    
+      if (item!.status == "Đơn hàng mới")
+        liststatus = [true, false, false, false];
+      else if (item!.status == "Đơn hàng đã được xác nhận")
+        liststatus = [true, true, false, false];
+      else if (item!.status == "Đơn hàng đang giao")
+        liststatus = [true, true, true, false];
+      else if (item!.status == "Đơn hàng đã hoàn thành")
+        liststatus = [true, true, true, true];
+      storesitem = storeController.getstorebyid(item!.storeId!)!;
+      customer = await authController.getCustomerProfile(item!.userId!);
+  
+    setState((){
+      loaded = true;
+    });
   }
 
   Future<void> getCurrentLocation() async {
@@ -267,24 +300,14 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
     }
   }
 
-  List<bool> liststatus = [false, false, false, false];
+  
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<Ordercontroller>(builder: (controller) {
-      OrderData item = controller.orderlist[0];
-      if (item.status == "Đơn hàng mới")
-        liststatus = [true, false, false, false];
-      else if (item.status == "Đơn hàng đã được xác nhận")
-        liststatus = [true, true, false, false];
-      else if (item.status == "Đơn hàng đang giao")
-        liststatus = [true, true, true, false];
-      else if (item.status == "Đơn hàng đã hoàn thành")
-        liststatus = [true, true, true, true];
+   
+      
 
-      Storesitem storesitem = storeController.getstorebyid(item.storeId!)!;
-
-      return Scaffold(
+      return !loaded ? Center(child: CircularProgressIndicator(),) :Scaffold(
         resizeToAvoidBottomInset: false,
         body: Column(
           children: [
@@ -314,7 +337,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                                 style: TextStyle(color: Colors.grey[500]),
                               ),
                               Text(
-                                "${item.orderCode}",
+                                "${item!.orderCode}",
                                 style: TextStyle(
                                   fontSize: 18,
                                 ),
@@ -340,6 +363,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                                 children: [
                                   TileLayer(
                                     urlTemplate:
+                                    
                                         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                                     subdomains: ['a', 'b', 'c'],
                                   ),
@@ -349,7 +373,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                                           width: 100.0,
                                           height: 80.0,
                                           point: LatLng(
-                                              item.latitude!, item.longitude!),
+                                              item!.latitude!, item!.longitude!),
                                           child: Column(
                                             children: [
                                               Container(
@@ -376,8 +400,8 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                                       Marker(
                                           width: 100.0,
                                           height: 80.0,
-                                          point: LatLng(storesitem.latitude!,
-                                              storesitem.longitude!),
+                                          point: LatLng(storesitem!.latitude!,
+                                              storesitem!.longitude!),
                                           child: Column(
                                             children: [
                                               Container(
@@ -521,8 +545,8 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                                         getRoute(
                                             LatLng(pointCurrent!.latitude!,
                                                 pointCurrent!.longitude!),
-                                            LatLng(item.latitude!,
-                                                item.longitude!));
+                                            LatLng(item!.latitude!,
+                                                item!.longitude!));
                                         isShowRoute = !isShowRoute!;
                                       });
                                     },
@@ -564,7 +588,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                           width: AppDimention.size10,
                         ),
                         Text(
-                          "Phí vận chuyển : ${mathfunction.formatNumber(item.shippingFee!.toInt())} vnđ",
+                          "Phí vận chuyển : ${mathfunction.formatNumber(item!.shippingFee!.toInt())} vnđ",
                           style: TextStyle(color: Colors.red),
                         )
                       ],
@@ -630,8 +654,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                                       )
                                     ],
                                   ),
-                                  if (item.status ==
-                                      "Đơn hàng đã được xác nhận")
+                                
                                     Column(
                                       children: [
                                         Container(
@@ -757,23 +780,23 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Họ tên : Nguyễn Văn Nhật"),
+                        Text("Họ tên : ${customer!.fullName}"),
                         SizedBox(
                           height: AppDimention.size10,
                         ),
                         Text(
-                          "Địa chỉ : 54 Nguyễn Lương Bằng , Hòa Khánh Bắc , Liên Chiểu , Đà Nẵng",
+                          "Địa chỉ : ${customer!.address}",
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(
                           height: AppDimention.size10,
                         ),
-                        Text("Số điện thoại : 0799163083"),
+                        Text("Số điện thoại : ${customer!.phoneNumber}"),
                         SizedBox(
                           height: AppDimention.size10,
                         ),
-                        Text("Email : nhat@gmail.com"),
+                        Text("Email : ${customer!.email}"),
                         SizedBox(
                           height: AppDimention.size20,
                         ),
@@ -783,7 +806,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                             GestureDetector(
                               onTap: () {
                                 _ShowSendMessage(
-                                    "nhataaghjkl@gmail.com", "3AMDHD8");
+                                    "${customer!.email}", "${item!.orderCode}");
                               },
                               child: Container(
                                 width: AppDimention.size100,
@@ -803,7 +826,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                _sendSMS("0799163083");
+                                _sendSMS("${customer!.phoneNumber}");
                               },
                               child: Container(
                                 width: AppDimention.size100,
@@ -823,7 +846,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                             ),
                             GestureDetector(
                                 onTap: () {
-                                  _makePhoneCall("0799163083");
+                                  _makePhoneCall("${customer!.phoneNumber}");
                                 },
                                 child: Container(
                                   width: AppDimention.size100,
@@ -875,14 +898,55 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                       child: ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: 5,
+                          itemCount: item!.orderDetails!.length,
                           itemBuilder: (context, index) {
-                            return Container(
+                            OrderDetails orderDetails = item!.orderDetails![index];
+                            ProductDetail? productDetail;
+                            ComboDetail? comboDetail;
+                            bool? key;
+                            if(orderDetails.type == "product")
+                            {
+                              productDetail = orderDetails.productDetail;
+                              key = true;
+                          }
+                            else
+                            {
+                              comboDetail = orderDetails.comboDetail;
+                              key = false;
+                            }
+                            return key ? Container(
                               width: AppDimention.screenWidth,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Gà rán xào sả ớt",
+                                  Text("${productDetail!.productName}",
+                                      style: TextStyle(
+                                          fontSize: AppDimention.size20,
+                                          fontWeight: FontWeight.w500)),
+                                  SizedBox(
+                                    height: AppDimention.size5,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text("Size : ${productDetail.size}"),
+                                      Text("SL : ${productDetail.quantity}"),
+                                      Text("Giá : ${_formatNumber(productDetail.unitPrice!.toInt())}"),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: AppDimention.size10,
+                                  )
+                                ],
+                              ),
+                            ): 
+                             Container(
+                              width: AppDimention.screenWidth,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("${comboDetail!.comboId}",
                                       style: TextStyle(
                                           fontSize: AppDimention.size20,
                                           fontWeight: FontWeight.w500)),
@@ -944,19 +1008,19 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Địa chỉ giao hàng : 54 Nguyễn Lương Bằng , Hòa Khánh Bắc , Liên Chiểu , Đà Nẵng",
+                          "Địa chỉ giao hàng : ${item!.deliveryAddress}",
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(
                           height: AppDimention.size20,
                         ),
-                        Text("Phương thức thanh toán : CASH"),
+                        Text("Phương thức thanh toán :"),
                         SizedBox(
                           height: AppDimention.size20,
                         ),
                         Text(
-                            "Ghi chú :Chỉ với vài thao tác đơn giản, mọi thứ sẽ được giao đến đúng nơi mong muốn một cách nhanh chóng và tiện lợi. Không còn cần phải mang đơn hàng đến tận kho hay bưu điện để gửi đi. "),
+                            "Ghi chú :"),
                         SizedBox(
                           height: AppDimention.size20,
                         ),
@@ -996,6 +1060,7 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                     GestureDetector(
                       onTap: () {
                         _changeStatus();
+                       
                       },
                       child: Container(
                         width: AppDimention.size150 + AppDimention.size50,
@@ -1019,6 +1084,6 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
           ],
         ),
       );
-    });
+   
   }
 }

@@ -123,7 +123,7 @@ class OrderData {
 class OrderDetails {
   String? type;
   ProductDetail? productDetail;
-  Null? comboDetail;
+  ComboDetail? comboDetail;
 
   OrderDetails({this.type, this.productDetail, this.comboDetail});
 
@@ -141,7 +141,9 @@ class OrderDetails {
     if (this.productDetail != null) {
       data['productDetail'] = this.productDetail!.toJson();
     }
-    data['comboDetail'] = this.comboDetail;
+     if (this.comboDetail != null) {
+      data['comboDetail'] = this.comboDetail!.toJson();
+    }
     return data;
   }
 }
@@ -213,4 +215,53 @@ class ProductDetail {
     data['bestSeller'] = this.bestSeller;
     return data;
   }
+}
+class ComboDetail {
+ int? orderDetailId;
+  int? comboId;
+  int? quantity;
+  double? unitPrice;
+  double? totalPrice;
+  String? size;
+  String? drinkId;
+  int? storeId;
+  String? status;
+
+  ComboDetail(
+      {this.orderDetailId,
+      this.quantity,
+      this.unitPrice,
+      this.totalPrice,
+      this.size,
+      this.drinkId,
+      this.storeId,
+      this.status,
+      });
+
+  ComboDetail.fromJson(Map<String, dynamic> json) {
+    orderDetailId = json['orderDetailId'];
+    comboId = json['comboId'];
+    quantity = json['quantity'];
+    unitPrice = json['unitPrice'];
+    totalPrice = json['totalPrice'];
+    size = json['size'];
+     drinkId = json['drinkId'];
+    storeId = json['storeId'];
+    status = json['status'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['orderDetailId'] = this.orderDetailId;
+    data['comboId'] = this.comboId;
+    data['quantity'] = this.quantity;
+    data['unitPrice'] = this.unitPrice;
+    data['totalPrice'] = this.totalPrice;
+    data['size'] = this.size;
+    data['drinkId'] = this.drinkId;
+    data['storeId'] = this.storeId;
+    data['status'] = this.status;
+    return data;
+  }
+
 }
