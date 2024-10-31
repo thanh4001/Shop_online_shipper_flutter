@@ -3,31 +3,27 @@ import 'package:flutter_shipper_github/data/controller/AuthController.dart';
 import 'package:get/get.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_shipper_github/data/controller/OrderController.dart';
+
 class OrderCheckService extends GetxService {
   Timer? _timer;
-  int? previousLength;
+  int? previousLength = 0;
   late Ordercontroller orderController = Get.find<Ordercontroller>();
   late AuthController authController = Get.find<AuthController>();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   Future<OrderCheckService> initService() async {
-    
     _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) async {
-      if(authController.IsLogin.value){
-
-      int currentLength = orderController.orderlistNotComplete.length;
-
-      
+      if (authController.IsLogin.value) {
+        authController.updateLocation();
         await orderController.getall();
-       if (previousLength == 0 && currentLength > 0) {
-       
-        await showNotification();
-      }
-      previousLength = currentLength;
+        int currentLength = orderController.orderlistNotComplete.length;
+        if (previousLength == 0 && currentLength > 0) {
+          await showNotification();
+        }
+        previousLength = currentLength;
       }
     });
-
 
     return this;
   }
@@ -53,7 +49,6 @@ class OrderCheckService extends GetxService {
 
   @override
   void onClose() {
-   
     _timer?.cancel();
     super.onClose();
   }

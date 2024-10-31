@@ -20,7 +20,7 @@ class ProfileBody extends StatefulWidget {
 }
 
 class _ProfileBodyState extends State<ProfileBody> {
-  AuthController authcontroller = Get.find<AuthController>();
+  late AuthController authcontroller = Get.find<AuthController>();
   TextEditingController fullnamecontroller = TextEditingController();
   TextEditingController homenumbercontroller = TextEditingController();
   TextEditingController districtcontroller = TextEditingController();
@@ -48,13 +48,12 @@ class _ProfileBodyState extends State<ProfileBody> {
   bool loaded = false;
   void loadData() async {
     loaded = false;
-    await authcontroller.getProfile();
+    
     while (authcontroller.getLoadingProfile!) {
       await Future.delayed(const Duration(microseconds: 100));
     }
+    user = authcontroller.getuserProfile;
     setState(() {
-      user = authcontroller.getuserProfile;
-      
       fullnamecontroller.text = user!.fullName!;
       phonecontroller.text = user!.phoneNumber!;
       emailcontroller.text = user!.email!;

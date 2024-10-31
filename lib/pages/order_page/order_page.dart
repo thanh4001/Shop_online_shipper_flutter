@@ -55,6 +55,7 @@ class _OrderPageState extends State<OrderPage> {
       overlayEntry?.remove();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,16 +68,13 @@ class _OrderPageState extends State<OrderPage> {
             height: AppDimention.size80,
             decoration: BoxDecoration(color: Appcolor.mainColor),
             child: Center(
-               
-                child:  Text(
-                  "Đơn hàng của bạn",
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                )
-              
-            ),
+                child: Text(
+              "Đơn hàng của bạn",
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+            )),
           ),
           Expanded(
               child: SingleChildScrollView(
@@ -85,496 +83,524 @@ class _OrderPageState extends State<OrderPage> {
                 GetBuilder<Ordercontroller>(builder: (controller) {
                   return controller.isLoading
                       ? CircularProgressIndicator()
-                      :controller.orderlistNotComplete.length == 0 ? Column(children: [SizedBox(height: AppDimention.size10,),Center(child: Text("Bạn chưa có đơn hàng"),)],) :  ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: controller.orderlistNotComplete.length,
-                          itemBuilder: (context, index) {
-                            OrderData item = controller.orderlistNotComplete[index];
-                            
-                            
+                      : controller.orderlistNotComplete.length == 0
+                          ? Column(
+                              children: [
+                                SizedBox(
+                                  height: AppDimention.size10,
+                                ),
+                                Center(
+                                  child: Text("Bạn chưa có đơn hàng"),
+                                )
+                              ],
+                            )
+                          : ListView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: controller.orderlistNotComplete.length,
+                              itemBuilder: (context, index) {
+                                OrderData item =
+                                    controller.orderlistNotComplete[index];
 
-                            return Container(
-                              width: AppDimention.screenWidth,
-                              padding: EdgeInsets.all(AppDimention.size10),
-                              margin: EdgeInsets.only(
-                                bottom: AppDimention.size10,
-                                left: AppDimention.size10,
-                                right: AppDimention.size10,
-                              ),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(
-                                      AppDimention.size10)),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: AppDimention.screenWidth,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
+                                return Container(
+                                  width: AppDimention.screenWidth,
+                                  padding: EdgeInsets.all(AppDimention.size10),
+                                  margin: EdgeInsets.only(
+                                    bottom: AppDimention.size10,
+                                    left: AppDimention.size10,
+                                    right: AppDimention.size10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(
+                                          AppDimention.size10)),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: AppDimention.screenWidth,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "Mã đơn hàng : ",
+                                                  style: TextStyle(
+                                                      color: Colors.grey[500]),
+                                                ),
+                                                Text("${item.orderCode}")
+                                              ],
+                                            ),
+                                            if(item.status != "Chưa nhận")
+                                            GestureDetector(
+                                              onTap: () {
+                                                Get.toNamed(AppRoute
+                                                    .get_order_detail_receive(
+                                                        item.shipperOrderId!));
+                                              },
+                                              child: Container(
+                                                width: AppDimention.size80,
+                                                height: AppDimention.size30,
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            AppDimention.size5),
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.black12)),
+                                                child: Center(
+                                                  child: Text("Chi tiết"),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Phí vận chuyển : đ",
+                                            style: TextStyle(
+                                                color: Colors.grey[500]),
+                                          ),
+                                          Text("${item.shippingFee!.toInt()}")
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: AppDimention.size20,
+                                      ),
+                                      if (item.status != "Chưa nhận")
                                         Row(
                                           children: [
                                             Text(
-                                              "Mã đơn hàng : ",
+                                              "Trạng thái đơn hàng : ${item.status}",
                                               style: TextStyle(
                                                   color: Colors.grey[500]),
                                             ),
-                                            Text("${item.orderCode}")
                                           ],
                                         ),
-                                        GestureDetector(
+                                      if (item.status == "Chưa nhận")
+                                        Center(
+                                            child: GestureDetector(
                                           onTap: () {
-                                            Get.toNamed(AppRoute.get_order_detail_receive(item.orderId!));
+                                            controller.acceptorder(item.shipperOrderId!);
                                           },
                                           child: Container(
-                                            width: AppDimention.size80,
-                                            height: AppDimention.size30,
+                                            width: AppDimention.size150,
+                                            height: AppDimention.size40,
                                             decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(
                                                         AppDimention.size5),
                                                 border: Border.all(
                                                     width: 1,
-                                                    color: Colors.black12)),
+                                                    color: Colors.red)),
                                             child: Center(
-                                              child: Text("Chi tiết"),
+                                              child: Text("Nhận đơn hàng"),
                                             ),
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Phí vận chuyển : đ",
-                                        style:
-                                            TextStyle(color: Colors.grey[500]),
-                                      ),
-                                      Text("${item.shippingFee!.toInt()}")
-                                    ],
-                                  ),
-                                  SizedBox(height: AppDimention.size20,),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Trạng thái đơn hàng ",
-                                        style:
-                                            TextStyle(color: Colors.grey[500]),
-                                            
-                                      ),
-                                    
-                                    ],
-                                  ),
-                                  Container(
-                                            width: AppDimention.screenWidth,
-                                            padding: EdgeInsets.only(
-                                              top: AppDimention.size10,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                if (item.status ==
-                                                    "Đơn hàng mới")
-                                                  Container(
-                                                      width:
-                                                          AppDimention.size100 *
-                                                              3.4,
-                                                      height:
-                                                          AppDimention.size30,
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                            left: 10,
-                                                            top: 10,
-                                                            child: Row(
-                                                              children: [
-                                                                Container(
-                                                                  width: AppDimention
+                                        )),
+                                      Container(
+                                        width: AppDimention.screenWidth,
+                                        padding: EdgeInsets.only(
+                                          top: AppDimention.size10,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            if (item.status == "Đơn hàng mới")
+                                              Container(
+                                                  width: AppDimention.size100 *
+                                                      3.4,
+                                                  height: AppDimention.size30,
+                                                  child: Stack(
+                                                    children: [
+                                                      Positioned(
+                                                        left: 10,
+                                                        top: 10,
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
                                                                       .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          GestureDetector(
-                                                            onTapDown:
-                                                                (details) {
-                                                              showPopover(
-                                                                  context,
-                                                                  details
-                                                                      .globalPosition,
-                                                                  "Đơn hàng mới");
-                                                            },
-                                                            child: Icon(
-                                                              Icons.circle,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
                                                               color:
-                                                                  Colors.green,
+                                                                  Colors.grey,
                                                             ),
-                                                          )
-                                                        ],
-                                                      ))
-                                                else if (item.status  ==
-                                                    "Đơn hàng đã được xác nhận")
-                                                  Container(
-                                                      width:
-                                                          AppDimention.size100 *
-                                                              3.4,
-                                                      height:
-                                                          AppDimention.size30,
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                            left: 10,
-                                                            top: 10,
-                                                            child: Row(
-                                                              children: [
-                                                                Container(
-                                                                  width: AppDimention
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
                                                                       .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .red,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                              ],
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.grey,
                                                             ),
-                                                          ),
-                                                          Positioned(
-                                                            left: 0,
-                                                            top: 0,
-                                                            child: Row(
-                                                              children: [
-                                                                GestureDetector(
-                                                                  onTapDown:
-                                                                      (details) {
-                                                                    showPopover(
-                                                                        context,
-                                                                        details
-                                                                            .globalPosition,
-                                                                        "Đơn hàng mới");
-                                                                  },
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .circle,
-                                                                    color: Colors
-                                                                        .red,
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Positioned(
-                                                            left: AppDimention
-                                                                .size110,
-                                                            top: 0,
-                                                            child: Row(
-                                                              children: [
-                                                                GestureDetector(
-                                                                  onTapDown:
-                                                                      (details) {
-                                                                    showPopover(
-                                                                        context,
-                                                                        details
-                                                                            .globalPosition,
-                                                                        "Đã xác nhận");
-                                                                  },
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .circle,
-                                                                    color: Colors
-                                                                        .red,
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ))
-                                                else if (item.status  ==
-                                                    "Đơn hàng đang giao")
-                                                  Container(
-                                                      width:
-                                                          AppDimention.size100 *
-                                                              3.4,
-                                                      height:
-                                                          AppDimention.size30,
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                            left: 10,
-                                                            top: 10,
-                                                            child: Row(
-                                                              children: [
-                                                                Container(
-                                                                  width: AppDimention
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
                                                                       .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .amber,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .amber,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .grey,
-                                                                ),
-                                                              ],
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.grey,
                                                             ),
-                                                          ),
-                                                          Positioned(
-                                                            left: 0,
-                                                            top: 0,
-                                                            child: Row(
-                                                              children: [
-                                                                GestureDetector(
-                                                                  onTapDown:
-                                                                      (details) {
-                                                                    showPopover(
-                                                                        context,
-                                                                        details
-                                                                            .globalPosition,
-                                                                        "Đơn hàng mới");
-                                                                  },
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .circle,
-                                                                    color: Colors
-                                                                        .amber,
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Positioned(
-                                                            left: AppDimention
-                                                                .size110,
-                                                            top: 0,
-                                                            child: Row(
-                                                              children: [
-                                                                GestureDetector(
-                                                                  onTapDown:
-                                                                      (details) {
-                                                                    showPopover(
-                                                                        context,
-                                                                        details
-                                                                            .globalPosition,
-                                                                        "Đã xác nhận");
-                                                                  },
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .circle,
-                                                                    color: Colors
-                                                                        .amber,
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Positioned(
-                                                            left: AppDimention
-                                                                    .size110 *
-                                                                2,
-                                                            top: 0,
-                                                            child: Row(
-                                                              children: [
-                                                                GestureDetector(
-                                                                  onTapDown:
-                                                                      (details) {
-                                                                    showPopover(
-                                                                        context,
-                                                                        details
-                                                                            .globalPosition,
-                                                                        "Đang giao");
-                                                                  },
-                                                                  child: Icon(
-                                                                    Icons
-                                                                        .circle,
-                                                                    color: Colors
-                                                                        .amber,
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ))
-                                                else if (item.status  ==
-                                                    "Đơn hàng đã hoàn thành")
-                                                  Container(
-                                                      width:
-                                                          AppDimention.size100 *
-                                                              3.45,
-                                                      height:
-                                                          AppDimention.size30,
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                            left: 10,
-                                                            top: 10,
-                                                            child: Row(
-                                                              children: [
-                                                                Container(
-                                                                  width: AppDimention
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
                                                                       .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .blue,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .blue,
-                                                                ),
-                                                                Container(
-                                                                  width: AppDimention
-                                                                      .size110,
-                                                                  height:
-                                                                      AppDimention
-                                                                          .size5,
-                                                                  color: Colors
-                                                                      .blue,
-                                                                ),
-                                                              ],
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.grey,
                                                             ),
-                                                          ),
-                                                          GestureDetector(
-                                                            onTapDown:
-                                                                (details) {
-                                                              showPopover(
-                                                                  context,
-                                                                  details
-                                                                      .globalPosition,
-                                                                  "Đã xác nhận");
-                                                            },
-                                                            child: Icon(
-                                                              Icons.circle,
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        onTapDown: (details) {
+                                                          showPopover(
+                                                              context,
+                                                              details
+                                                                  .globalPosition,
+                                                              "Đơn hàng mới");
+                                                        },
+                                                        child: Icon(
+                                                          Icons.circle,
+                                                          color: Colors.green,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ))
+                                            else if (item.status ==
+                                                "Đơn hàng đã được xác nhận")
+                                              Container(
+                                                  width: AppDimention.size100 *
+                                                      3.4,
+                                                  height: AppDimention.size30,
+                                                  child: Stack(
+                                                    children: [
+                                                      Positioned(
+                                                        left: 10,
+                                                        top: 10,
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
                                                               color: Colors.red,
                                                             ),
-                                                          ),
-                                                          GestureDetector(
-                                                            onTapDown:
-                                                                (details) {
-                                                              showPopover(
-                                                                  context,
-                                                                  details
-                                                                      .globalPosition,
-                                                                  "Đã xác nhận");
-                                                            },
-                                                            child: Icon(
-                                                              Icons.circle,
-                                                              color: Colors.red,
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.grey,
                                                             ),
-                                                          ),
-                                                          GestureDetector(
-                                                            onTapDown:
-                                                                (details) {
-                                                              showPopover(
-                                                                  context,
-                                                                  details
-                                                                      .globalPosition,
-                                                                  "Đã xác nhận");
-                                                            },
-                                                            child: Icon(
-                                                              Icons.circle,
-                                                              color: Colors.red,
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.grey,
                                                             ),
-                                                          ),
-                                                          GestureDetector(
-                                                            onTapDown:
-                                                                (details) {
-                                                              showPopover(
-                                                                  context,
-                                                                  details
-                                                                      .globalPosition,
-                                                                  "Đã xác nhận");
-                                                            },
-                                                            child: Icon(
-                                                              Icons.circle,
-                                                              color: Colors.red,
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        left: 0,
+                                                        top: 0,
+                                                        child: Row(
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTapDown:
+                                                                  (details) {
+                                                                showPopover(
+                                                                    context,
+                                                                    details
+                                                                        .globalPosition,
+                                                                    "Đơn hàng mới");
+                                                              },
+                                                              child: Icon(
+                                                                Icons.circle,
+                                                                color:
+                                                                    Colors.red,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        left: AppDimention
+                                                            .size110,
+                                                        top: 0,
+                                                        child: Row(
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTapDown:
+                                                                  (details) {
+                                                                showPopover(
+                                                                    context,
+                                                                    details
+                                                                        .globalPosition,
+                                                                    "Đã xác nhận");
+                                                              },
+                                                              child: Icon(
+                                                                Icons.circle,
+                                                                color:
+                                                                    Colors.red,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ))
+                                            else if (item.status ==
+                                                "Đơn hàng đang giao")
+                                              Container(
+                                                  width: AppDimention.size100 *
+                                                      3.4,
+                                                  height: AppDimention.size30,
+                                                  child: Stack(
+                                                    children: [
+                                                      Positioned(
+                                                        left: 10,
+                                                        top: 10,
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.amber,
                                                             ),
-                                                          )
-                                                        ],
-                                                      ))
-                                              ],
-                                            ),
-                                          ),
-                                ],
-                              ),
-                            );
-                          });
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.amber,
+                                                            ),
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        left: 0,
+                                                        top: 0,
+                                                        child: Row(
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTapDown:
+                                                                  (details) {
+                                                                showPopover(
+                                                                    context,
+                                                                    details
+                                                                        .globalPosition,
+                                                                    "Đơn hàng mới");
+                                                              },
+                                                              child: Icon(
+                                                                Icons.circle,
+                                                                color: Colors
+                                                                    .amber,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        left: AppDimention
+                                                            .size110,
+                                                        top: 0,
+                                                        child: Row(
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTapDown:
+                                                                  (details) {
+                                                                showPopover(
+                                                                    context,
+                                                                    details
+                                                                        .globalPosition,
+                                                                    "Đã xác nhận");
+                                                              },
+                                                              child: Icon(
+                                                                Icons.circle,
+                                                                color: Colors
+                                                                    .amber,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        left: AppDimention
+                                                                .size110 *
+                                                            2,
+                                                        top: 0,
+                                                        child: Row(
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTapDown:
+                                                                  (details) {
+                                                                showPopover(
+                                                                    context,
+                                                                    details
+                                                                        .globalPosition,
+                                                                    "Đang giao");
+                                                              },
+                                                              child: Icon(
+                                                                Icons.circle,
+                                                                color: Colors
+                                                                    .amber,
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ))
+                                            else if (item.status ==
+                                                "Đơn hàng đã hoàn thành")
+                                              Container(
+                                                  width: AppDimention.size100 *
+                                                      3.45,
+                                                  height: AppDimention.size30,
+                                                  child: Stack(
+                                                    children: [
+                                                      Positioned(
+                                                        left: 10,
+                                                        top: 10,
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.blue,
+                                                            ),
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.blue,
+                                                            ),
+                                                            Container(
+                                                              width:
+                                                                  AppDimention
+                                                                      .size110,
+                                                              height:
+                                                                  AppDimention
+                                                                      .size5,
+                                                              color:
+                                                                  Colors.blue,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        onTapDown: (details) {
+                                                          showPopover(
+                                                              context,
+                                                              details
+                                                                  .globalPosition,
+                                                              "Đã xác nhận");
+                                                        },
+                                                        child: Icon(
+                                                          Icons.circle,
+                                                          color: Colors.red,
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        onTapDown: (details) {
+                                                          showPopover(
+                                                              context,
+                                                              details
+                                                                  .globalPosition,
+                                                              "Đã xác nhận");
+                                                        },
+                                                        child: Icon(
+                                                          Icons.circle,
+                                                          color: Colors.red,
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        onTapDown: (details) {
+                                                          showPopover(
+                                                              context,
+                                                              details
+                                                                  .globalPosition,
+                                                              "Đã xác nhận");
+                                                        },
+                                                        child: Icon(
+                                                          Icons.circle,
+                                                          color: Colors.red,
+                                                        ),
+                                                      ),
+                                                      GestureDetector(
+                                                        onTapDown: (details) {
+                                                          showPopover(
+                                                              context,
+                                                              details
+                                                                  .globalPosition,
+                                                              "Đã xác nhận");
+                                                        },
+                                                        child: Icon(
+                                                          Icons.circle,
+                                                          color: Colors.red,
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              });
                 })
               ],
             ),

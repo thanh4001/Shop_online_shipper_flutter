@@ -35,10 +35,10 @@ class AppPage {
      GetPage(
         name: AppRoute.ORDER_DETAIL_RECEIVE_PAGE,
         page: () {
-          var orderCode = Get.parameters['orderCode'];
-          int orderCodeInt = int.tryParse(orderCode ?? '0') ?? 0;
+          var shipperOrderId = Get.parameters['shipperOrderId'];
+          int shipperOrderIdInt = int.tryParse(shipperOrderId ?? '0') ?? 0;
           return OrderDetailReceive(
-              orderCode: orderCodeInt);
+              shipperOrderId: shipperOrderIdInt);
         }),
   ];
 }

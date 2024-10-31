@@ -1,24 +1,81 @@
-
 import 'dart:math';
 
+import 'package:flutter_shipper_github/data/controller/OrderController.dart';
+import 'package:flutter_shipper_github/themes/AppDimention.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
-class DiagramRevenue extends StatelessWidget{
-    final int keyvalue;
-   DiagramRevenue({
-       Key? key,
-       required this.keyvalue,
-   }): super(key:key);
-    List<Color> gradientColors = [
-      Colors.blue,
-      Colors.green
-    ];
-   @override
-   Widget build(BuildContext context) {
-      
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
+class DiagramRevenue extends StatefulWidget {
+  final int keyvalue;
+  DiagramRevenue({
+    Key? key,
+    required this.keyvalue,
+  }) : super(key: key);
+
+  @override
+  _DiagramRevenueState createState() => _DiagramRevenueState();
+}
+
+class _DiagramRevenueState extends State<DiagramRevenue> {
+  List<Color> gradientColors = [Colors.blue, Colors.green];
+  late List<DateTime> listdate;
+  String? _selectedOption;
+
+  @override
+  void initState() {
+    super.initState();
+    listdate =widget.keyvalue == 7 ? getCurrentWeekDates() : getCurrentMonthDates();
+    _selectedOption = widget.keyvalue == 7 ? "Tuần" :"Tháng";
+  }
+
+  List<DateTime> getCurrentMonthDates() {
+    DateTime today = DateTime.now();
+    DateTime startOfMonth = DateTime(today.year, today.month, 1);
+    DateTime endOfMonth = DateTime(today.year, today.month + 1, 0);
+    return List.generate(
+        endOfMonth.day, (index) => startOfMonth.add(Duration(days: index)));
+  }
+
+  List<DateTime> getMonthDates(int year, int month) {
+    DateTime startOfMonth = DateTime(year, month, 1);
+    DateTime endOfMonth = DateTime(year, month + 1, 0);
+    return List.generate(
+        endOfMonth.day, (index) => startOfMonth.add(Duration(days: index)));
+  }
+
+  List<DateTime> getCurrentWeekDates() {
+    DateTime today = DateTime.now();
+    DateTime startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+    return List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+  }
+
+  String formatDateV0(DateTime deliveredAt) {
+    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    return formatter.format(deliveredAt);
+  }
+
+  Ordercontroller ordercontroller = Get.find<Ordercontroller>();
+  int selectedMonth = DateTime.now().month;
+  int selectedYear = DateTime.now().year;
+  List<int> months = List<int>.generate(12, (i) => i + 1);
+  List<int> years = List<int>.generate(100, (i) => DateTime.now().year - i);
+ 
+ 
+    
+    void changeTimeSelected() {
+      setState(() {
+        listdate = getMonthDates(selectedYear, selectedMonth);
+      });
+    }
+  
+
+  @override
+  Widget build(BuildContext context) {
+    
     return Stack(
       children: <Widget>[
         AspectRatio(
@@ -27,53 +84,134 @@ class DiagramRevenue extends StatelessWidget{
             padding: const EdgeInsets.only(
               right: 18,
               left: 12,
-              top: 24,
               bottom: 12,
             ),
-            child: LineChart(
-               mainData(),
+            child: Column(
+              children: [
+                Row(
+            children: [
+              SizedBox(
+                width: AppDimention.size10,
+              ),
+              Icon(
+                Icons.line_axis_rounded,
+                size: 45,
+                color: Colors.green,
+              ),
+              SizedBox(
+                width: AppDimention.size10,
+              ),
+              Text(
+                "Biểu đồ thu nhập",
+                style: TextStyle(fontSize: 20),
+              ),
+              Container(
+                width: AppDimention.size110,
+                padding: EdgeInsets.all(16.0),
+                child: DropdownButton<String>(
+                  hint: Text('Chọn'),
+                  value: _selectedOption,
+                  items:
+                      <String>['Tuần', 'Tháng'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedOption = newValue!;
+                      if(_selectedOption == "Tuần"){
+                        setState(() {
+                          listdate = getCurrentWeekDates();
+                        });
+                      }
+                      else{
+                         setState(() {
+                          listdate = getCurrentMonthDates();
+                        });
+                      }
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+                if (listdate.length > 7)
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        // Dropdown chọn tháng
+                        DropdownButton<int>(
+                          hint: Text("Tháng"),
+                          value: selectedMonth,
+                          items: months.map((int month) {
+                            return DropdownMenuItem<int>(
+                              value: month,
+                              child: Text(month.toString()),
+                            );
+                          }).toList(),
+                          onChanged: (int? newValue) {
+                            setState(() {
+                              selectedMonth = newValue!;
+                              changeTimeSelected();
+                            });
+                          },
+                        ),
+                        // Dropdown chọn năm
+                        DropdownButton<int>(
+                          hint: Text("Năm"),
+                          value: selectedYear,
+                          items: years.map((int year) {
+                            return DropdownMenuItem<int>(
+                              value: year,
+                              child: Text(year.toString()),
+                            );
+                          }).toList(),
+                          onChanged: (int? newValue) {
+                            setState(() {
+                              selectedYear = newValue!;
+                              changeTimeSelected();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                Expanded(
+                  child: LineChart(
+                    mainData(),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        
       ],
     );
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-  const style = TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 16,
-  );
+    const style = TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 8,
+    );
 
-  
-  Widget text = const SizedBox(); 
+    Widget text = const SizedBox();
 
-  for (int i = 0; i < keyvalue; i++) {
-    if(keyvalue > 7){
-      if (value.toInt() == i ) {
-        if(i%7 == 0 && i != 0)
-        {
-          text = Text((i).toString(), style: style);
-          break;
-        } 
+    for (int i = 0; i < listdate.length; i++) {
+      if (value.toInt() == i) {
+        text = Text("${listdate[i].day}", style: style);
+        break;
       }
     }
-    else{
-      if (value.toInt() == i ) {
-            text = Text((i + 1).toString(), style: style);
-            break; 
-      }
-    }
-    
+
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      child: text,
+    );
   }
-
-  return SideTitleWidget(
-    axisSide: meta.axisSide,
-    child: text,
-  );
-}
-
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
@@ -83,13 +221,13 @@ class DiagramRevenue extends StatelessWidget{
     String text;
     switch (value.toInt()) {
       case 1:
-        text = '10K';
+        text = 'đ100';
         break;
       case 3:
-        text = '30k';
+        text = 'đ300';
         break;
       case 5:
-        text = '50k';
+        text = 'đ500';
         break;
       default:
         return Container();
@@ -99,7 +237,6 @@ class DiagramRevenue extends StatelessWidget{
   }
 
   LineChartData mainData() {
-    Random random = Random();
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -108,7 +245,7 @@ class DiagramRevenue extends StatelessWidget{
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
           return const FlLine(
-            color:Colors.blue,
+            color: Colors.blue,
             strokeWidth: 1,
           );
         },
@@ -149,14 +286,19 @@ class DiagramRevenue extends StatelessWidget{
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,
-      maxX: keyvalue!-1,
+      maxX: listdate.length.toDouble()-1,
       minY: 0,
-      maxY: 6,
+      maxY: 2,
       lineBarsData: [
         LineChartBarData(
-          spots:  [
-            for (int i = 0; i < keyvalue!; i++) 
-              FlSpot(i.toDouble(), random.nextDouble() * 5 ),
+          spots: [
+            for (int i = 0; i < listdate.length; i++)
+              FlSpot(
+                  i.toDouble(),
+                  (ordercontroller.getllOrderCompleteFee(
+                              formatDateV0(listdate[i])) /
+                          100000)
+                      .toDouble()),
           ],
           isCurved: true,
           gradient: LinearGradient(
@@ -179,5 +321,4 @@ class DiagramRevenue extends StatelessWidget{
       ],
     );
   }
-   
 }

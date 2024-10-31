@@ -18,10 +18,13 @@ class AuthRepo {
     return await apiClient.postData(Appconstant.LOGIN_URL, dto.toJson());
   }
   Future<Response> updateProfile(Shipperrequest request) async {
-    return await apiClient.postData(Appconstant.UPDATE_PROFILE_URL, request.toJson());
+    return await apiClient.putData(Appconstant.UPDATE_PROFILE_URL, request.toJson());
   }
   Future<Response> getProfile() async {
     return await apiClient.getData(Appconstant.GET_PROFILE_URL);
+  }
+  Future<Response> updateLocation(double latitude,double longtitude) async {
+    return await apiClient.postData(Appconstant.UPDATE_LOCATION_URL.replaceFirst("{latitude}", latitude.toString()).replaceFirst("{longtitude}", longtitude.toString()) ,null);
   }
   Future<Response> getCutomerProfile(int userid) async {
     return await apiClient.getData(Appconstant.CUSTOMER_PROFILE_URL.replaceFirst("{id}", userid.toString()));

@@ -8,8 +8,8 @@ class AppRoute {
   static String ORDER_DETAIL_RECEIVE_PAGE = "/order-detail-receive";
   static String PROFILE_PAGE = "/profile";
 
-  static String get_order_detail_receive(int orderCode) =>
-      '$ORDER_DETAIL_RECEIVE_PAGE?orderCode=$orderCode';
+  static String get_order_detail_receive(int shipperOrderId) =>
+      '$ORDER_DETAIL_RECEIVE_PAGE?shipperOrderId=$shipperOrderId';
   static String get_order_detail(int orderCode) =>
       '$ORDER_DETAIL_PAGE?orderCode=$orderCode';
 

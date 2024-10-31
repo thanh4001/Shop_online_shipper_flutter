@@ -28,7 +28,7 @@ class Ordermodels {
   }
 }
 class OrderData {
-  int? id;
+  int? shipperOrderId;
   int? shipperId;
   String? status;
   String? receivedAt;
@@ -49,7 +49,7 @@ class OrderData {
 
   OrderData(
       {
-        this.id,
+        this.shipperOrderId,
       this.shipperId,
       this.status,
       this.receivedAt,
@@ -69,7 +69,7 @@ class OrderData {
       this.orderDetails});
 
   OrderData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    shipperOrderId = json['shipperOrderId'];
     shipperId = json['shipperId'];
     status = json['status'];
     receivedAt = json['receivedAt'];
@@ -96,7 +96,7 @@ class OrderData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
+    data['shipperOrderId'] = this.shipperOrderId;
     data['shipperId'] = this.shipperId;
     data['status'] = this.status;
     data['receivedAt'] = this.receivedAt;
@@ -132,7 +132,9 @@ class OrderDetails {
     productDetail = json['productDetail'] != null
         ? new ProductDetail.fromJson(json['productDetail'])
         : null;
-    comboDetail = json['comboDetail'];
+    comboDetail = json['comboDetail'] != null
+        ? new ComboDetail.fromJson(json['comboDetail'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -159,7 +161,7 @@ class ProductDetail {
   double? unitPrice;
   double? totalPrice;
   String? size;
-  String? drinkId;
+  List<int>? drinkId;
   int? storeId;
   String? status;
   bool? bestSeller;
@@ -191,7 +193,7 @@ class ProductDetail {
     unitPrice = json['unitPrice'];
     totalPrice = json['totalPrice'];
     size = json['size'];
-    drinkId = json['drinkId'];
+    drinkId = (json['drinkId'] as List<dynamic>?)?.map((item) => item as int).toList();
     storeId = json['storeId'];
     status = json['status'];
     bestSeller = json['bestSeller'];
@@ -217,26 +219,27 @@ class ProductDetail {
   }
 }
 class ComboDetail {
- int? orderDetailId;
+  int? orderDetailId;
   int? comboId;
   int? quantity;
   double? unitPrice;
   double? totalPrice;
   String? size;
-  String? drinkId;
+  List<int>? drinkId;
   int? storeId;
   String? status;
 
-  ComboDetail(
-      {this.orderDetailId,
-      this.quantity,
-      this.unitPrice,
-      this.totalPrice,
-      this.size,
-      this.drinkId,
-      this.storeId,
-      this.status,
-      });
+  ComboDetail({
+    this.orderDetailId,
+    this.comboId,
+    this.quantity,
+    this.unitPrice,
+    this.totalPrice,
+    this.size,
+    this.drinkId,
+    this.storeId,
+    this.status,
+  });
 
   ComboDetail.fromJson(Map<String, dynamic> json) {
     orderDetailId = json['orderDetailId'];
@@ -245,23 +248,25 @@ class ComboDetail {
     unitPrice = json['unitPrice'];
     totalPrice = json['totalPrice'];
     size = json['size'];
-     drinkId = json['drinkId'];
+    // Ensure drinkId is properly converted from dynamic to List<int>
+    drinkId = (json['drinkId'] as List<dynamic>?)?.map((item) => item as int).toList();
     storeId = json['storeId'];
     status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['orderDetailId'] = this.orderDetailId;
     data['comboId'] = this.comboId;
     data['quantity'] = this.quantity;
     data['unitPrice'] = this.unitPrice;
     data['totalPrice'] = this.totalPrice;
     data['size'] = this.size;
+    // Convert drinkId list to JSON
     data['drinkId'] = this.drinkId;
     data['storeId'] = this.storeId;
     data['status'] = this.status;
     return data;
   }
-
 }
+

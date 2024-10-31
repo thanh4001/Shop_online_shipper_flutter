@@ -1,3 +1,7 @@
+
+
+import 'package:flutter_shipper_github/data/FunctionApp/MapFuntion.dart';
+import 'package:flutter_shipper_github/data/FunctionApp/Point.dart';
 import 'package:flutter_shipper_github/data/api/ApiClient.dart';
 import 'package:flutter_shipper_github/data/dto/ShipperRequest.dart';
 import 'package:flutter_shipper_github/data/dto/UserLoginDto.dart';
@@ -10,6 +14,7 @@ import 'package:get/get.dart';
 
 class AuthController extends GetxController implements GetxService {
   final AuthRepo authRepo;
+  Mapfuntion mapfuntion = Mapfuntion();
   var IsLogin = false.obs;
   AuthController({
     required this.authRepo,
@@ -27,11 +32,12 @@ class AuthController extends GetxController implements GetxService {
     Response response = await authRepo.updateProfile(request);
     if (response.statusCode == 200) {
       Get.snackbar("Thông báo", "Cập nhật thành công");
+      getProfile();
     } else {
       print("Lỗi cập nhật thông tin người dùng ${response.statusCode}");
     }
   }
-  bool? isLoadingProfile ;
+  bool? isLoadingProfile = false ;
   bool? get getLoadingProfile => isLoadingProfile;
   User? userProfile;
   User? get getuserProfile => userProfile;
@@ -43,6 +49,7 @@ class AuthController extends GetxController implements GetxService {
       var data = response.body;
 
       userProfile = UsermodelV2.fromJson(data).getuser;
+      print(data);
       print("Lấy dữ liệu thành công");
       
       update();
@@ -74,6 +81,7 @@ class AuthController extends GetxController implements GetxService {
 
       // Get user logined
       user = Usermodel.fromJson(data).getuser;
+      print(user!.fullName);
 
       if (user!.roles![0] == "ROLE_SHIPPER") {
         String newToken = data["data"]["token"];
@@ -92,6 +100,16 @@ class AuthController extends GetxController implements GetxService {
       validateLogin = response.body["message"];
       update();
       return false;
+    }
+  }
+  Future<void> updateLocation() async{
+    Point currentPoint = await mapfuntion.getCurrentLocation();
+    Response response = await authRepo.updateLocation( currentPoint.latitude!, currentPoint.longitude!);
+    if(response.statusCode == 200){
+      print("Câp nhật vị trí thành công");
+    }
+    else{
+      print("Câp nhật vị trí thất bại ${response.statusCode}");
     }
   }
 }
