@@ -58,14 +58,18 @@ class _CharPageState extends State<CharPage> {
           return Dialog(
               child: Container(
             width: AppDimention.screenWidth,
+            height: AppDimention.size100 * 7,
             padding: EdgeInsets.all(AppDimention.size10),
-            child: Column(
+            child: SingleChildScrollView(
+              child: Column(
               children: listorder.map((item) {
                 Storesitem? store = storecontroller.getstorebyid(item.storeId!);
                 return Container(
                   width: AppDimention.screenWidth,
+                  margin: EdgeInsets.only(bottom: 10),
                   padding: EdgeInsets.all(AppDimention.size10),
-                  decoration: BoxDecoration(color: Colors.grey[200]),
+                  decoration: BoxDecoration(color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(5)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -128,6 +132,7 @@ class _CharPageState extends State<CharPage> {
                 );
               }).toList(),
             ),
+            )
           ));
         });
   }
@@ -203,10 +208,10 @@ class _CharPageState extends State<CharPage> {
               ),
               Text(
                 "Biểu đồ đơn hàng",
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 18),
               ),
               Container(
-                width: AppDimention.size110,
+                width: AppDimention.size120,
                 padding: EdgeInsets.all(16.0),
                 child: DropdownButton<String>(
                   hint: Text('Chọn'),
@@ -248,7 +253,7 @@ class _CharPageState extends State<CharPage> {
               ),
               Text(
                 "Danh sách đơn hàng",
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 18),
               ),
               Container(
                 width: AppDimention.size110,
@@ -313,7 +318,7 @@ class _CharPageState extends State<CharPage> {
               ),
               Text(
                 "Danh sách thu nhập",
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 18),
               ),
               Container(
                 width: AppDimention.size110,

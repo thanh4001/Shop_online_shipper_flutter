@@ -3,7 +3,9 @@
 import 'package:flutter_shipper_github/data/FunctionApp/MapFuntion.dart';
 import 'package:flutter_shipper_github/data/FunctionApp/Point.dart';
 import 'package:flutter_shipper_github/data/api/ApiClient.dart';
+import 'package:flutter_shipper_github/data/dto/RegisterDto.dart';
 import 'package:flutter_shipper_github/data/dto/ShipperRequest.dart';
+import 'package:flutter_shipper_github/data/dto/UpdateDto.dart';
 import 'package:flutter_shipper_github/data/dto/UserLoginDto.dart';
 import 'package:flutter_shipper_github/data/models/Item/Useritem.dart';
 import 'package:flutter_shipper_github/data/models/UserModelV2.dart';
@@ -28,13 +30,13 @@ class AuthController extends GetxController implements GetxService {
   Useritem? user;
   Useritem? get getuser => user;
 
-  Future<void> updateProfile(Shipperrequest request) async {
+  Future<void> updateProfile(Updatedto request) async {
     Response response = await authRepo.updateProfile(request);
     if (response.statusCode == 200) {
       Get.snackbar("Thông báo", "Cập nhật thành công");
-      getProfile();
+      await getProfile();
     } else {
-      print("Lỗi cập nhật thông tin người dùng ${response.statusCode}");
+      print("Lỗi cập nhật thông tin người dùng ${response.body}");
     }
   }
   bool? isLoadingProfile = false ;
@@ -44,17 +46,14 @@ class AuthController extends GetxController implements GetxService {
 
   Future<void> getProfile() async {
     isLoadingProfile = true;
-    Response response = await authRepo.getProfile();
+    Response response = await authRepo.getProfile(user!.id!);
     if (response.statusCode == 200) {
       var data = response.body;
-
       userProfile = UsermodelV2.fromJson(data).getuser;
-      print(data);
-      print("Lấy dữ liệu thành công");
       
       update();
     } else {
-      print("Lỗi dữ liệu lấy thông tin ${response.statusCode}");
+      print("Lỗi dữ liệu lấy thông tin ${response.body}");
     }
     isLoadingProfile = false;
     update();
@@ -110,6 +109,15 @@ class AuthController extends GetxController implements GetxService {
     }
     else{
       print("Câp nhật vị trí thất bại ${response.statusCode}");
+    }
+  }
+  Future<void> register(Registerdto dto) async{
+    Response response = await authRepo.register(dto);
+    if(response.statusCode == 200){
+      Get.snackbar("Thông báo", "Đăng kí thành công");
+    }
+    else{
+      Get.snackbar("Thông báo", "Đăng kí thất bại ${response.body}");
     }
   }
 }

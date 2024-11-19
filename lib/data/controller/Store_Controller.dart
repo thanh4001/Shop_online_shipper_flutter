@@ -23,7 +23,6 @@ class Storecontroller extends GetxController {
       var data = response.body;
       storeList = [];
       storeList.addAll(Storesmodel.fromJson(data).get_liststores ?? []);
-
       print("Lấy dữ liệu danh sách cửa hàng thành công");
     } 
     else {

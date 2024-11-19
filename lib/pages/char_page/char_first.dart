@@ -103,10 +103,10 @@ class _DiagramRevenueState extends State<DiagramRevenue> {
               ),
               Text(
                 "Biểu đồ thu nhập",
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 18),
               ),
               Container(
-                width: AppDimention.size110,
+                width: AppDimention.size120,
                 padding: EdgeInsets.all(16.0),
                 child: DropdownButton<String>(
                   hint: Text('Chọn'),
@@ -297,7 +297,7 @@ class _DiagramRevenueState extends State<DiagramRevenue> {
                   i.toDouble(),
                   (ordercontroller.getllOrderCompleteFee(
                               formatDateV0(listdate[i])) /
-                          100000)
+                          10000000)
                       .toDouble()),
           ],
           isCurved: true,

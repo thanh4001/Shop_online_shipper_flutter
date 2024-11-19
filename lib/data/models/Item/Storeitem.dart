@@ -31,8 +31,8 @@ class Storesitem {
     storeName = json['storeName'];
     image = json['image'];
     location = json['location'];
-    latitude = json['longitude'];
-    longitude = json['latitude'];
+    latitude = json['latitude'];
+    longitude = json['longitude'];
     numberPhone = json['numberPhone'];
     openingTime = json['openingTime'];
     closingTime = json['closingTime'];

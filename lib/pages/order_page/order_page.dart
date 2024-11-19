@@ -99,8 +99,10 @@ class _OrderPageState extends State<OrderPage> {
                               shrinkWrap: true,
                               itemCount: controller.orderlistNotComplete.length,
                               itemBuilder: (context, index) {
+                                
                                 OrderData item =
                                     controller.orderlistNotComplete[index];
+                                print(item.status);
 
                                 return Container(
                                   width: AppDimention.screenWidth,
@@ -182,7 +184,7 @@ class _OrderPageState extends State<OrderPage> {
                                             ),
                                           ],
                                         ),
-                                      if (item.status == "Chưa nhận")
+                                      if (item.status == "Chưa nhận" || item.status =="Đã nhận lại từ shipper khác nhưng chưa chấp nhận")
                                         Center(
                                             child: GestureDetector(
                                           onTap: () {

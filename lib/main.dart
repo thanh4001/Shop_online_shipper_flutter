@@ -8,16 +8,26 @@ import 'package:flutter_shipper_github/route/app_page.dart';
 import 'package:flutter_shipper_github/route/app_route.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_shipper_github/data/controller/OrderController.dart'; // Import Ordercontroller
-
+import 'package:permission_handler/permission_handler.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dep.init();
   await initNotifications();
   await Get.putAsync(() => OrderCheckService().initService());
-  
+   await requestLocationPermission();
   runApp(const MyApp());
 }
-// finish
+Future<void> requestLocationPermission() async {
+  var status = await Permission.location.status;
+  if (status.isDenied) {
+    status = await Permission.location.request();
+    if (status.isDenied) {
+      // Xử lý khi quyền bị từ chối
+      print("User denied location permissions.");
+      // Hiển thị thông báo hoặc điều hướng người dùng đến trang cài đặt
+    }
+  }
+}
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -43,6 +53,7 @@ class MyApp extends StatelessWidget {
     return Obx(() {
       if (authController.IsLogin.value) {
         Get.find<Storecontroller>().getall();
+      
       }
     return GetMaterialApp(
       initialRoute: AppRoute.LOGIN_PAGE,

@@ -113,7 +113,6 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
         listorderid.add(comboDetailLoad!.orderDetailId!);
       }
     }
-    print(listorderid.length);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -155,7 +154,6 @@ class _OrderDetailReceiveState extends State<OrderDetailReceive> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          print(Currentstatus);
                           if(Currentstatus == 2){
                             ordercontroller.updatestatus(shipperOrderId, listorderid);
                           }

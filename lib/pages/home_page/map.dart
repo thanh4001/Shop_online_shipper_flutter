@@ -68,7 +68,7 @@ class _MapScreenState extends State<MapScreen> {
             coordinates.map((point) => LatLng(point[1], point[0])).toList();
       });
     } else {
-      print("Failed to fetch route");
+      Get.snackbar("Thông báo", "Không có đường bộ để đi");
     }
   }
 
@@ -110,9 +110,6 @@ class _MapScreenState extends State<MapScreen> {
                             markers: controller.getstoreList.map((item) {
                               LatLng storeLocation =
                                   LatLng(item.latitude!, item.longitude!);
-
-                              print(item.latitude!);
-                              print(item.longitude!);
 
                               return Marker(
                                 width: 200,
@@ -246,6 +243,10 @@ class _MapScreenState extends State<MapScreen> {
                                   left: 110,
                                   child: GestureDetector(
                                     onTap: () {
+                                      if(storeselected == null){
+                                        Get.snackbar("Thông báo", "Vui lòng chọn cửa hàng");
+                                      }
+                                      else{
                                       setState(() {
                                         getRoute(
                                             LatLng(currentPoint!.latitude!,
@@ -254,6 +255,7 @@ class _MapScreenState extends State<MapScreen> {
                                                 storeselected!.longitude!));
                                         isShowRoute = !isShowRoute!;
                                       });
+                                      }
                                     },
                                     child: Container(
                                       width: AppDimention.size40,
@@ -284,7 +286,7 @@ class _MapScreenState extends State<MapScreen> {
                         width: AppDimention.screenWidth,
                         padding: EdgeInsets.all(AppDimention.size10),
                         child: DropdownButtonFormField<Storesitem>(
-                          dropdownColor: Colors.amber,
+                          dropdownColor: Colors.amber.withOpacity(0.5),
                           hint: Text(
                             "Chọn cửa hàng",
                             style:
@@ -316,6 +318,11 @@ class _MapScreenState extends State<MapScreen> {
                                             Container(
                                               width: AppDimention.size50,
                                               height: AppDimention.size50,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(image: MemoryImage(
+                                                  base64Decode(item.image!)
+                                                ))
+                                              ),
                                             ),
                                             SizedBox(
                                                 height: AppDimention.size10),

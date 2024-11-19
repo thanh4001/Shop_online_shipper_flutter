@@ -13,9 +13,10 @@ class OrderCheckService extends GetxService {
       FlutterLocalNotificationsPlugin();
 
   Future<OrderCheckService> initService() async {
-    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) async {
       if (authController.IsLogin.value) {
         authController.updateLocation();
+        
         await orderController.getall();
         int currentLength = orderController.orderlistNotComplete.length;
         if (previousLength == 0 && currentLength > 0) {
